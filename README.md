@@ -2,8 +2,6 @@
 
 A custom statusline for [Claude Code](https://claude.com/claude-code) with gradient segments, Nerd Font icons, and a two-line layout.
 
-![screenshot](screenshot.png)
-
 ## Features
 
 **Line 1:** Model name, context window usage bar, lines changed, token counts, session uptime, cost, and a shrug face
