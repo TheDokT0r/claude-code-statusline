@@ -25,6 +25,16 @@ A custom statusline for [Claude Code](https://claude.com/claude-code) with gradi
 
 ## Install
 
+### Quick install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/TheDokT0r/claude-code-statusline/master/install.sh | bash
+```
+
+This downloads the script to `~/.claude/statusline-command.sh` and configures `~/.claude/settings.json` automatically.
+
+### Manual install
+
 1. Copy the script somewhere permanent:
 
 ```bash
