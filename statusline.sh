@@ -81,15 +81,16 @@ blend() {
   printf '%s' "$result"
 }
 
-# Rainbow segment colors (RGB)
-# rose -> orange -> gold -> green/orange/red -> teal -> purple
-R_MODEL="180 60 100"
-R_FOLDER="190 110 40"
-R_BRANCH="175 150 30"
-R_CHANGES="40 135 160"
-R_TOKENS="60 100 170"
-R_UPTIME="130 60 150"
-R_COST="105 55 165"
+# Segment colors (RGB) — tuned per-line for smooth gradients
+# Line 1 (top): warm gradient — orange -> gold -> teal
+R_FOLDER="195 110 45"
+R_BRANCH="165 150 40"
+R_CHANGES="55 150 130"
+# Line 2 (bottom): cool gradient — rose -> blue -> purple -> magenta
+R_MODEL="170 55 100"
+R_TOKENS="70 75 165"
+R_UPTIME="105 55 160"
+R_COST="135 50 145"
 
 # Context bar color based on usage
 if [ "$pct" -ge 80 ] 2>/dev/null; then   R_BAR="175 50 50"
@@ -101,11 +102,10 @@ fi
 R_TERM="28 28 28"
 
 face='¯\_(ツ)_/¯'
-R_FACE="160 80 140"
+R_FACE="155 65 130"
 
-# Build line 1: model, context bar, changes, tokens, uptime, cost, face
+# Build line 2: bar, model, tokens, uptime, cost, face
 out=""
-out+="$(blend $R_TERM $R_MODEL)$(bg_rgb $R_MODEL)${FG_W} ${icon_model} ${model} "
 
 # Build progress bar: bright filled, dark empty
 read -r br bg bb <<< "$R_BAR"
@@ -116,9 +116,9 @@ FG_DIM="$(fg_rgb $dim_r $dim_g $dim_b)"
 bar=""
 for ((i=0; i<filled; i++)); do bar+="${FG_W}━"; done
 for ((i=0; i<empty; i++)); do bar+="${FG_DIM}━"; done
-out+="$(blend $R_MODEL $R_BAR)$(bg_rgb $R_BAR)${FG_W} ${icon_gauge} ${pct}% ${bar} "
-out+="$(blend $R_BAR $R_CHANGES)$(bg_rgb $R_CHANGES)${FG_W} +${lines_added} -${lines_removed} "
-out+="$(blend $R_CHANGES $R_TOKENS)$(bg_rgb $R_TOKENS)${FG_W} ${icon_tokens} ${tokens_in_fmt}/${tokens_out_fmt} "
+out+="$(blend $R_TERM $R_BAR)$(bg_rgb $R_BAR)${FG_W} ${icon_gauge} ${pct}% ${bar} "
+out+="$(blend $R_BAR $R_MODEL)$(bg_rgb $R_MODEL)${FG_W} ${icon_model} ${model} "
+out+="$(blend $R_MODEL $R_TOKENS)$(bg_rgb $R_TOKENS)${FG_W} ${icon_tokens} ${tokens_in_fmt}/${tokens_out_fmt} "
 out+="$(blend $R_TOKENS $R_UPTIME)$(bg_rgb $R_UPTIME)${FG_W} ${icon_clock} ${uptime_fmt} "
 out+="$(blend $R_UPTIME $R_COST)$(bg_rgb $R_COST)${FG_W} ${icon_cost}${cost_fmt} "
 out+="$(blend $R_COST $R_FACE)$(bg_rgb $R_FACE)${FG_W} ${face} "
@@ -132,9 +132,11 @@ if [ -n "$branch" ]; then
   line2+="$(blend $R_FOLDER $R_BRANCH)$(bg_rgb $R_BRANCH)${FG_W} ${icon_branch} "
   [ -n "$repo_name" ] && line2+="${repo_name}:" || true
   line2+="${branch} "
-  line2+="$(blend $R_BRANCH $R_TERM)${RST}"
+  line2+="$(blend $R_BRANCH $R_CHANGES)$(bg_rgb $R_CHANGES)${FG_W} +${lines_added} -${lines_removed} "
+  line2+="$(blend $R_CHANGES $R_TERM)${RST}"
 else
-  line2+="$(blend $R_FOLDER $R_TERM)${RST}"
+  line2+="$(blend $R_FOLDER $R_CHANGES)$(bg_rgb $R_CHANGES)${FG_W} +${lines_added} -${lines_removed} "
+  line2+="$(blend $R_CHANGES $R_TERM)${RST}"
 fi
 
-printf '%s\n%s' "$out" "$line2"
+printf '%s\n%s' "$line2" "$out"
